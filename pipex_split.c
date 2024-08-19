@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_split.c                                         :+:      :+:    :+:   */
+/*   pipex_split.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuyu <yuyu@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 21:17:24 by yuyu              #+#    #+#             */
-/*   Updated: 2024/08/19 23:31:32 by yuyu             ###   ########.fr       */
+/*   Updated: 2024/08/19 23:31:23 by yuyu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "pipex.h"
 
 static int	ft_find_all(char *s, char c, int *length)
 {
@@ -47,6 +47,29 @@ static void	free_all(char **ans, char index)
 	}
 }
 
+static char	*ft_substr_add_s(char const *s, unsigned int start, size_t len)
+{
+	char	*str;
+	size_t	i;
+
+	i = ft_strlen(s);
+	if (i <= start || len == 0)
+	{
+		str = ft_calloc(1, 1);
+		return (str);
+	}
+	i = ft_strlen(s + start);
+	if (len > i)
+		len = i;
+	str = ft_calloc(len + 2, 1);
+	if (!str)
+		return (0);
+	ft_strlcpy(str, s + start, len + 1);
+	str[len] = '/';
+	str[len + 1] = 0;
+	return (str);
+}
+
 static int	ft_split_all(char *str, char **ans, int length, int i)
 {
 	char	*s;
@@ -61,7 +84,7 @@ static int	ft_split_all(char *str, char **ans, int length, int i)
 		{
 			if (check > 0)
 			{
-				s = ft_substr(str + i - check, 0, check);
+				s = ft_substr_add_s(str + i - check, 0, check);
 				if (!s)
 				{
 					free_all(ans, index);
@@ -76,7 +99,7 @@ static int	ft_split_all(char *str, char **ans, int length, int i)
 	return (1);
 }
 
-char	**ft_split(char const *s, char c)
+char	**pipex_split(char const *s, char c)
 {
 	char	**ans;
 	char	*str;

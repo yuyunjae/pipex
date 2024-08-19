@@ -6,14 +6,14 @@
 /*   By: yuyu <yuyu@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 16:01:25 by yuyu              #+#    #+#             */
-/*   Updated: 2024/08/19 22:15:41 by yuyu             ###   ########.fr       */
+/*   Updated: 2024/08/19 23:32:08 by yuyu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PIPEX_H
 # define PIPEX_H
 
-# include "libft.h"
+# include "libft/libft.h"
 
 # include <stdio.h>
 # include <sys/wait.h>
@@ -38,5 +38,7 @@ void	execute_command(char *file, char **command, char **env);
 void	parse_command(t_pipex *pipe_info, char **env, int arg_index);
 void	child_process(t_pipex *pipe_info, char **env, int arg_index);
 void	pipex(t_pipex *pipe_info, char **env, int arg_index);
+
+char	**pipex_split(char const *s, char c);
 
 #endif
