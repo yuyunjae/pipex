@@ -6,18 +6,11 @@
 /*   By: yuyu <yuyu@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 21:55:22 by yuyu              #+#    #+#             */
-/*   Updated: 2024/07/23 15:25:26 by yuyu             ###   ########.fr       */
+/*   Updated: 2024/08/23 06:08:48 by yuyu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-
-static int	ft_isspace(char c)
-{
-	if (c == ' ' || (c >= 9 && c <= 13))
-		return (1);
-	return (0);
-}
 
 static unsigned long	ft_strtol(char *str, int sign)
 {

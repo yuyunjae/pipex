@@ -6,7 +6,7 @@
 /*   By: yuyu <yuyu@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/19 15:59:14 by yuyu              #+#    #+#             */
-/*   Updated: 2024/08/23 03:11:12 by yuyu             ###   ########.fr       */
+/*   Updated: 2024/08/23 08:21:36 by yuyu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,14 +17,14 @@
 // 	system("leaks pipex");
 // }
 
-void	common_error(t_pipex *pipe_info, int arg_index, int option)
+void	common_error(t_pipex *pipe_info, char *str, int option)
 {
 	char	*error_msg;
 
 	ft_putstr_fd(pipe_info->command[0], 2);
 	ft_putstr_fd(": ", 2);
 	error_msg = strerror(errno);
-	ft_putstr_fd(pipe_info->command[arg_index + 2], 2);
+	ft_putstr_fd(str, 2);
 	//ft_putstr_fd(error_msg, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(error_msg, 2);
@@ -35,7 +35,7 @@ void	common_error(t_pipex *pipe_info, int arg_index, int option)
 	exit(errno);
 }
 
-void	command_err(t_pipex *pipe_info, int arg_index)
+void	command_error(t_pipex *pipe_info, char *str)
 {
 	char	*error_msg;
 
@@ -43,7 +43,7 @@ void	command_err(t_pipex *pipe_info, int arg_index)
 	ft_putstr_fd(pipe_info->command[0], 2);
 	ft_putstr_fd(": ", 2);
 	//ft_putstr_fd(error_msg, 2);
-	ft_putstr_fd(pipe_info->command[arg_index + 2], 2);
+	ft_putstr_fd(str, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(error_msg, 2);
 	//ft_putstr_fd(pipe_info->command[arg_index + 2], 2);
@@ -93,15 +93,39 @@ void	execute_command(t_pipex *pipe_info, char **env, t_comm *com_str, int arg_in
 
 	// i = -1;
 	execve(com_str->str, com_str->comm, env);
-	common_error(pipe_info, arg_index, 0);
+	common_error(pipe_info, pipe_info->command[arg_index + 2], 0);
 
 	// if (execve(com_str->str, com_str->comm, env) == -1)
-	// 	common_error(pipe_info, arg_index);
+	// 	common_error(pipe_info, pipe_info->command[arg_index + 2]);
 	// free(com_str->str);
 	// while (com_str->comm[++i])
 	// 	free(com_str->comm[i]);
 	// free(com_str->comm);
 	// exit(0);
+}
+
+void	check_sh(t_pipex *pipe_info, char **env, t_comm *com_str, int arg_index)
+{
+	if (!ft_strncmp(com_str->comm[0], "./", 2))
+	{
+		if (access(ft_strchr(com_str->comm[0], '/') + 1, X_OK) != 0)
+			common_error(pipe_info, pipe_info->command[arg_index + 2], 126);
+		else
+		{
+			com_str->str = ft_strdup(com_str->comm[0]);
+			if (!com_str->str)
+				error_occur("malloc_error");
+			return (execute_command(pipe_info, env, com_str, arg_index));
+		}
+	}
+	if (access(com_str->comm[0], X_OK) == 0)
+	{
+		com_str->str = ft_strdup(com_str->comm[0]);
+		if (!com_str->str)
+			error_occur("malloc_error");
+		return (execute_command(pipe_info, env, com_str, arg_index));
+	}
+	return ;
 }
 
 void	parse_command(t_pipex *pipe_info, char **env, int arg_index)
@@ -110,41 +134,42 @@ void	parse_command(t_pipex *pipe_info, char **env, int arg_index)
 	int		i;
 
 	i = -1;
-	com_str.comm = fix_split(pipe_info->command[arg_index + 2], ' ');
+	com_str.comm = make_parse(pipe_info->command[arg_index + 2]);
 	if (!com_str.comm)
 		error_occur("malloc_error");
-	if (access(com_str.comm[0], X_OK) == 0)
-	{
-		com_str.str = ft_strdup(com_str.comm[0]);
-		if (!com_str.str)
-			error_occur("malloc_error");
-		return (execute_command(pipe_info, env, &com_str, arg_index));
-	}
+	check_sh(pipe_info, env, &com_str, arg_index);
 	while (pipe_info->path[++i])
 	{
 		com_str.str = ft_strjoin(pipe_info->path[i], com_str.comm[0]);
 		if (!com_str.str)
 			error_occur("malloc_error");
 		if (access(com_str.str, X_OK) == 0)
-			return (execute_command(pipe_info, env, &com_str, arg_index));
+			execute_command(pipe_info, env, &com_str, arg_index);
 		free(com_str.str);
 	}
-	command_err(pipe_info, arg_index); // 해당 명령어 못찾음.
+	command_error(pipe_info, com_str.comm[0]); // 해당 명령어 못찾음.
 }
+
+		// ft_putnbr_fd(i, 2);
+		// ft_putstr_fd(": ", 2);
+		// ft_putstr_fd(com_str.comm[0], 2);
+		// ft_putstr_fd(": ", 2);
+		// ft_putnbr_fd((int)&com_str.comm[0], 2);
+		// ft_putendl_fd("  ", 2);
 
 void	child_process(t_pipex *pipe_info, char **env, int arg_index, int pipe_fd[2])
 {
 	close(pipe_fd[0]);
 	if (dup2(pipe_fd[1], STDOUT_FILENO) < 0)
-		common_error(pipe_info, arg_index, 0);
+		common_error(pipe_info, pipe_info->command[arg_index + 2], 0);
 	close(pipe_fd[1]);
 	if (arg_index == 0)
 	{
 		pipe_info->input_file_fd = open(pipe_info->command[1], O_RDONLY);
 		if (pipe_info->input_file_fd < 0)
-			common_error(pipe_info, -1, 0);
+			common_error(pipe_info, pipe_info->command[1], 0);
 		if (dup2(pipe_info->input_file_fd, STDIN_FILENO) < 0)
-			common_error(pipe_info, arg_index, 0);
+			common_error(pipe_info, pipe_info->command[arg_index + 2], 0);
 		close(pipe_info->input_file_fd);
 	}
 	else if (arg_index == pipe_info->arg_count - 4)
@@ -153,9 +178,9 @@ void	child_process(t_pipex *pipe_info, char **env, int arg_index, int pipe_fd[2]
 		// if (access(pipe_info->command[pipe_info->arg_count - 1], W_OK) < 0)
 		// 	common_error(pipe_info, pipe_info->arg_count -3, 1);
 		if (pipe_info->output_file_fd < 0)
-			common_error(pipe_info, pipe_info->arg_count -3, 0);
+			common_error(pipe_info, pipe_info->command[pipe_info->arg_count -1], 0);
 		if (dup2(pipe_info->output_file_fd, STDOUT_FILENO) < 0)
-			common_error(pipe_info, arg_index, 0);
+			common_error(pipe_info, pipe_info->command[arg_index + 2], 0);
 		close(pipe_info->output_file_fd);
 	}
 	parse_command(pipe_info, env, arg_index);
@@ -166,10 +191,10 @@ void	pipex(t_pipex *pipe_info, char **env, int arg_index)
 	int		pipe_fd[2];
 
 	if (pipe(pipe_fd) < 0)
-		common_error(pipe_info, arg_index, 0);
+		common_error(pipe_info, pipe_info->command[arg_index + 2], 0);
 	pipe_info->pid[arg_index] = fork();
 	if (pipe_info->pid[arg_index] < 0)
-		common_error(pipe_info, arg_index, 0);
+		common_error(pipe_info, pipe_info->command[arg_index + 2], 0);
 	else if (pipe_info->pid[arg_index] == 0)
 	{
 		child_process(pipe_info, env, arg_index, pipe_fd);
@@ -179,7 +204,7 @@ void	pipex(t_pipex *pipe_info, char **env, int arg_index)
 	{
 		close(pipe_fd[1]); // write close
 		if (dup2(pipe_fd[0], STDIN_FILENO) < 0) // read -> fd = 0;
-			common_error(pipe_info, arg_index, 0);
+			common_error(pipe_info, pipe_info->command[arg_index + 2], 0);
 		close(pipe_fd[0]); // read close
 		// 마지막에 output file을 0번 fd가 가르키고 있는데, 이것도 닫아야하는가..
 		if (arg_index == pipe_info->arg_count - 4)
@@ -197,7 +222,7 @@ void	pipex_setting(t_pipex *pipe_info, int argc, char **argv, char **env)
 	pipe_info->command = argv;
 	pipe_info->path = parse_path(env);
 	if (!pipe_info->path)
-		error_occur(NULL);
+		error_occur("malloc_error");
 	if (ft_strncmp(argv[0], "./", 2) == 0)
 		argv[0] = &argv[0][2];
 	pipe_info->pid = (pid_t *)malloc(sizeof(pid_t) * (pipe_info->arg_count - 3));

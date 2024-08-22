@@ -6,7 +6,7 @@
 /*   By: yuyu <yuyu@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/06 16:50:10 by yuyu              #+#    #+#             */
-/*   Updated: 2024/08/19 16:08:55 by yuyu             ###   ########.fr       */
+/*   Updated: 2024/08/23 05:33:29 by yuyu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ int		extand_content(t_gnl *fd_line, int length);
 char	*get_next_line(int fd);
 
 int		ft_isalpha(int c);
+int		ft_isspace(char c);
 int		ft_isdigit(int c);
 int		ft_isalnum(int c);
 int		ft_isprint(int c);

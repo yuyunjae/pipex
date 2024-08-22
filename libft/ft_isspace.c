@@ -1,27 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   test.c                                             :+:      :+:    :+:   */
+/*   ft_isspace.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: yuyu <yuyu@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/19 16:50:29 by yuyu              #+#    #+#             */
-/*   Updated: 2024/08/22 18:43:10 by yuyu             ###   ########.fr       */
+/*   Created: 2024/08/23 05:32:41 by yuyu              #+#    #+#             */
+/*   Updated: 2024/08/23 06:07:52 by yuyu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/errno.h>
-
-int main(int argc, char **argv, char **env)
+int	ft_isspace(char c)
 {
-	int i = -1;
-	while (env[++i])
-		printf("%s\n", env[i]);
-	errno = 0;
-	//perror(NULL);
-	//strerror(errno);
+	if ((c >= 9 && c <= 13) || c == ' ')
+		return (1);
+	return (0);
 }
