@@ -6,7 +6,7 @@
 /*   By: yuyu <yuyu@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/31 21:17:24 by yuyu              #+#    #+#             */
-/*   Updated: 2024/08/19 23:31:23 by yuyu             ###   ########.fr       */
+/*   Updated: 2024/08/22 20:27:37 by yuyu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static int	ft_find_all(char *s, char c, int *length)
 	return (count);
 }
 
-static void	free_all(char **ans, char index)
+void	free_all(char **ans, char index)
 {
 	int	i;
 
@@ -45,6 +45,7 @@ static void	free_all(char **ans, char index)
 		free(ans[i]);
 		i++;
 	}
+	free(ans);
 }
 
 static char	*ft_substr_add_s(char const *s, unsigned int start, size_t len)
@@ -119,7 +120,6 @@ char	**pipex_split(char const *s, char c)
 	if (!ft_split_all(str, ans, length, -1))
 	{
 		free(str);
-		free(ans);
 		return (0);
 	}
 	ans[count] = 0;

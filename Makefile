@@ -1,8 +1,8 @@
 NAME = pipex
-CC = gcc
+CC = cc
 CFLAG = -g -Wall -Wextra -Werror
 HEADERS = pipex.h
-SRCS = pipex.c pipex_split.c
+SRCS = pipex.c pipex_split.c command_split.c
 OBJS = $(SRCS:.c=.o)
 
 LIBRARY_DIR = libft
