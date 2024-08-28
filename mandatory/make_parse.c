@@ -6,7 +6,7 @@
 /*   By: yuyu <yuyu@student.42seoul.kr>             +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/23 05:23:51 by yuyu              #+#    #+#             */
-/*   Updated: 2024/08/23 07:43:03 by yuyu             ###   ########.fr       */
+/*   Updated: 2024/08/28 17:12:28 by yuyu             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,7 +122,8 @@ char	**make_parse(char *str)
 	if (!string_info.str)
 		return (0);
 	count_word(&string_info);
-	string_info.result = (char **)ft_calloc(string_info.word_cnt + 1, sizeof(char *));
+	string_info.result = (char **)ft_calloc(string_info.word_cnt + 1,
+			sizeof(char *));
 	if (!string_info.result)
 	{
 		free(string_info.str);
